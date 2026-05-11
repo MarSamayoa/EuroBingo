@@ -279,17 +279,22 @@
     border-color: var(--hot-pink);
   }
 
+  /* ============ WIN CELEBRATION ============ */
+
   .win-banner {
     margin: 20px 0;
-    padding: 24px;
+    padding: 28px 24px;
     text-align: center;
-    background: linear-gradient(135deg, var(--hot-pink), var(--yellow));
+    background: linear-gradient(135deg, var(--hot-pink), var(--yellow), var(--cyan), var(--electric-purple));
+    background-size: 400% 400%;
     color: #000;
     font-weight: 900;
-    font-size: 32px;
-    border-radius: 12px;
-    animation: wiggle 0.5s ease-in-out infinite;
-    box-shadow: 0 0 40px rgba(255,20,147,0.5);
+    font-size: 36px;
+    border-radius: 16px;
+    box-shadow: 0 0 60px rgba(255,20,147,0.7), 0 0 100px rgba(255,215,0,0.4);
+    animation: banner-zoom 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), gradient-shift 3s ease infinite, wiggle 0.5s ease-in-out infinite 0.6s;
+    position: relative;
+    overflow: hidden;
   }
 
   .win-banner small {
@@ -297,6 +302,76 @@
     font-size: 14px;
     margin-top: 8px;
     font-weight: 600;
+  }
+
+  .win-banner .emoji-row {
+    font-size: 32px;
+    margin-top: 12px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .win-banner .emoji-row span {
+    display: inline-block;
+    animation: bounce-emoji 0.8s ease-in-out infinite;
+  }
+
+  .win-banner .emoji-row span:nth-child(2) { animation-delay: 0.1s; }
+  .win-banner .emoji-row span:nth-child(3) { animation-delay: 0.2s; }
+  .win-banner .emoji-row span:nth-child(4) { animation-delay: 0.3s; }
+  .win-banner .emoji-row span:nth-child(5) { animation-delay: 0.4s; }
+
+  @keyframes banner-zoom {
+    0% { transform: scale(0.3) rotate(-10deg); opacity: 0; }
+    50% { transform: scale(1.15) rotate(3deg); }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  @keyframes bounce-emoji {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-12px) scale(1.2); }
+  }
+
+  /* Screen flash overlay */
+  .flash-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0;
+    background: radial-gradient(circle, rgba(255,215,0,0.8), rgba(255,20,147,0.4), transparent 70%);
+  }
+
+  .flash-overlay.active {
+    animation: flash 1.2s ease-out forwards;
+  }
+
+  @keyframes flash {
+    0% { opacity: 0; }
+    20% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* Confetti */
+  .confetti {
+    position: fixed;
+    top: -20px;
+    width: 10px;
+    height: 14px;
+    pointer-events: none;
+    z-index: 99;
+    will-change: transform;
+  }
+
+  @keyframes confetti-fall {
+    0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+    100% { transform: translate(var(--drift, 0), 110vh) rotate(720deg); opacity: 0.5; }
   }
 
   .definitions {
@@ -345,6 +420,14 @@
     border-left: 2px solid var(--cyan);
   }
 
+  .def-item.off-card {
+    color: rgba(255,255,255,0.35);
+    font-size: 11px;
+    margin-top: 4px;
+    padding-left: 18px;
+    line-height: 1.4;
+  }
+
   .on-card-marker {
     color: var(--cyan);
     margin-right: 4px;
@@ -370,6 +453,8 @@
 </style>
 </head>
 <body>
+
+<div class="flash-overlay" id="flash-overlay"></div>
 
 <div class="container">
 
@@ -508,7 +593,11 @@
   function renderBanner() {
     const slot = document.getElementById('win-banner-slot');
     if (hasBingo) {
-      slot.innerHTML = `<div class="win-banner">🏆 BINGO! 🏆<small>${playerName || 'YOU'} has done it</small></div>`;
+      slot.innerHTML = `<div class="win-banner">
+        🏆 BINGO! 🏆
+        <small>${playerName || 'YOU'} has done it — douze points</small>
+        <div class="emoji-row"><span>✨</span><span>🎉</span><span>👑</span><span>🎊</span><span>✨</span></div>
+      </div>`;
     } else {
       slot.innerHTML = '';
     }
@@ -534,13 +623,100 @@
         if (i === 12) return;
         marks[i] = !marks[i];
         save();
+        const wasWin = hasBingo;
         if (!hasBingo && checkBingo()) {
           hasBingo = true;
         }
         renderGrid();
         renderBanner();
+        // Only celebrate on the moment of winning, not on every subsequent click
+        if (hasBingo && !wasWin) {
+          celebrate();
+        }
       });
     });
+  }
+
+  // ============ CELEBRATION ============
+
+  function celebrate() {
+    flashScreen();
+    launchConfetti();
+    playFanfare();
+  }
+
+  function flashScreen() {
+    const el = document.getElementById('flash-overlay');
+    el.classList.remove('active');
+    // Force reflow so the animation re-triggers
+    void el.offsetWidth;
+    el.classList.add('active');
+  }
+
+  function launchConfetti() {
+    const colors = ['#FF1493', '#00E5FF', '#FFD700', '#39FF14', '#B026FF', '#FF6B35'];
+    const shapes = ['rectangle', 'circle'];
+    const count = 120;
+    for (let i = 0; i < count; i++) {
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      const shape = shapes[Math.floor(Math.random() * shapes.length)];
+      const left = Math.random() * 100;
+      const drift = (Math.random() - 0.5) * 200;
+      const duration = 2.5 + Math.random() * 2.5;
+      const delay = Math.random() * 0.4;
+      const size = 6 + Math.random() * 8;
+      const rotation = Math.random() * 360;
+
+      c.style.cssText = `
+        left: ${left}vw;
+        width: ${size}px;
+        height: ${size * (shape === 'circle' ? 1 : 1.5)}px;
+        background: ${color};
+        border-radius: ${shape === 'circle' ? '50%' : '2px'};
+        transform: rotate(${rotation}deg);
+        animation: confetti-fall ${duration}s linear ${delay}s forwards;
+        --drift: ${drift}px;
+      `;
+      document.body.appendChild(c);
+      // Clean up after the animation ends so the DOM doesn't bloat with new cards
+      setTimeout(() => c.remove(), (duration + delay) * 1000 + 100);
+    }
+  }
+
+  function playFanfare() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      // A cheap-and-cheerful Eurovision-style trumpet flourish:
+      // C, E, G, C-octave-up — a major triad fanfare.
+      const notes = [
+        { freq: 523.25, time: 0,    duration: 0.15 }, // C5
+        { freq: 659.25, time: 0.15, duration: 0.15 }, // E5
+        { freq: 783.99, time: 0.30, duration: 0.15 }, // G5
+        { freq: 1046.50, time: 0.45, duration: 0.55 } // C6 held
+      ];
+
+      notes.forEach(n => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle'; // Warmer than 'sine', cleaner than 'square'
+        osc.frequency.value = n.freq;
+
+        // Envelope: quick attack, brief sustain, gentle release — keeps it punchy
+        gain.gain.setValueAtTime(0, ctx.currentTime + n.time);
+        gain.gain.linearRampToValueAtTime(0.15, ctx.currentTime + n.time + 0.02);
+        gain.gain.linearRampToValueAtTime(0.12, ctx.currentTime + n.time + n.duration * 0.7);
+        gain.gain.linearRampToValueAtTime(0, ctx.currentTime + n.time + n.duration);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(ctx.currentTime + n.time);
+        osc.stop(ctx.currentTime + n.time + n.duration);
+      });
+    } catch (e) {
+      // Web Audio blocked or unsupported — silent fail is fine, the visual still works
+    }
   }
 
   function renderDefinitions() {
@@ -548,14 +724,18 @@
     if (!card) return;
     // Names currently on this player's card (excluding the free space)
     const onCard = new Set(card.map((t, i) => i === 12 ? null : t.name).filter(Boolean));
-    // Show ALL tropes alphabetically, with the ones on your card marked
+    // Show all tropes alphabetically. Full definition for cards on YOUR card;
+    // just the name for everything else (acts as a "not in play" placeholder).
     list.innerHTML = [...TROPES]
       .sort((a, b) => a.name.localeCompare(b.name))
       .map(t => {
         const mine = onCard.has(t.name);
-        return `<div class="def-item ${mine ? 'on-card' : ''}">
-          ${mine ? '<span class="on-card-marker">★</span> ' : ''}<strong>${t.name}.</strong> ${t.def}
-        </div>`;
+        if (mine) {
+          return `<div class="def-item on-card">
+            <span class="on-card-marker">★</span> <strong>${t.name}.</strong> ${t.def}
+          </div>`;
+        }
+        return `<div class="def-item off-card">${t.name}</div>`;
       })
       .join('');
   }
