@@ -14,7 +14,6 @@
     --yellow: #FFD700;
     --lime: #39FF14;
     --bg: #0A0118;
-    --bg2: #1A0030;
   }
 
   html, body {
@@ -52,6 +51,11 @@
     50% { transform: rotate(1deg); }
   }
 
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(255,20,147,0.4); }
+    50% { box-shadow: 0 0 40px rgba(255,20,147,0.8); }
+  }
+
   .container {
     max-width: 600px;
     margin: 0 auto;
@@ -59,11 +63,91 @@
     z-index: 2;
   }
 
-  h1 {
-    font-size: 36px;
+  /* ============ LANDING ============ */
+
+  .landing {
+    min-height: calc(100vh - 40px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .landing h1 {
+    font-size: 64px;
     font-weight: 900;
     text-align: center;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+    text-shadow: 0 0 30px rgba(255,20,147,0.6);
+  }
+
+  .landing h1 .small {
+    display: block;
+    font-size: 0.4em;
+    margin-top: 12px;
+    letter-spacing: 0.05em;
+  }
+
+  .landing .tagline {
+    text-align: center;
+    color: rgba(255,255,255,0.7);
+    font-size: 16px;
+    margin-bottom: 40px;
+    max-width: 380px;
+    line-height: 1.5;
+  }
+
+  .landing .input-wrap {
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .landing input[type="text"] {
+    width: 100%;
+    padding: 16px 20px;
+    font-size: 18px;
+    background: rgba(255,255,255,0.08);
+    border: 2px solid var(--cyan);
+    border-radius: 14px;
+    color: white;
+    outline: none;
+    text-align: center;
+  }
+
+  .landing input[type="text"]:focus {
+    box-shadow: 0 0 0 3px rgba(0,229,255,0.3);
+  }
+
+  .landing button {
+    width: 100%;
+    margin-top: 14px;
+    padding: 16px;
+    font-size: 16px;
+    background: var(--yellow);
+    animation: pulse-glow 2s infinite;
+  }
+
+  .landing .footer-note {
+    margin-top: 32px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.4);
+    text-align: center;
+  }
+
+  /* ============ GAME ============ */
+
+  .game { display: none; }
+  .game.active { display: block; }
+  .landing.hidden { display: none; }
+
+  h2.game-title {
+    font-size: 32px;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 6px;
     letter-spacing: -0.02em;
     line-height: 1;
     text-shadow: 0 0 20px rgba(255,20,147,0.5);
@@ -74,39 +158,42 @@
     text-align: center;
     color: rgba(255,255,255,0.6);
     font-size: 13px;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     letter-spacing: 0.05em;
   }
 
-  .name-section {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 12px;
-    padding: 14px;
+  .player-bar {
+    background: rgba(255,215,0,0.08);
+    border: 1px solid rgba(255,215,0,0.3);
+    border-radius: 20px;
+    padding: 8px 16px;
     margin-bottom: 16px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 10px;
-  }
-
-  .name-section label {
     font-size: 13px;
-    color: rgba(255,255,255,0.7);
   }
 
-  input[type="text"] {
-    flex: 1;
-    padding: 8px 12px;
-    font-size: 14px;
-    background: rgba(0,0,0,0.3);
-    border: 1px solid var(--cyan);
-    border-radius: 8px;
+  .player-bar strong {
+    color: var(--yellow);
+  }
+
+  .change-name {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.3);
+    color: rgba(255,255,255,0.6);
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 400;
+  }
+
+  .change-name:hover {
     color: white;
-    outline: none;
-  }
-
-  input[type="text"]:focus {
-    box-shadow: 0 0 0 2px rgba(0,229,255,0.3);
   }
 
   .controls {
@@ -114,6 +201,7 @@
     gap: 8px;
     margin-bottom: 16px;
     flex-wrap: wrap;
+    justify-content: center;
   }
 
   button {
@@ -149,13 +237,13 @@
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 6px;
-    max-width: 480px;
+    max-width: 500px;
     margin: 0 auto;
   }
 
   .cell {
     aspect-ratio: 1;
-    padding: 4px;
+    padding: 6px;
     font-size: 10px;
     font-weight: 600;
     line-height: 1.15;
@@ -170,6 +258,10 @@
     user-select: none;
     background: rgba(255,255,255,0.05);
     color: white;
+  }
+
+  .cell:hover {
+    border-color: rgba(255,255,255,0.4);
   }
 
   .cell.marked {
@@ -207,6 +299,57 @@
     font-weight: 600;
   }
 
+  .definitions {
+    margin-top: 32px;
+    padding: 16px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+  }
+
+  .definitions summary {
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--cyan);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    list-style: none;
+  }
+
+  .definitions summary::before {
+    content: "▸ ";
+  }
+
+  .definitions[open] summary::before {
+    content: "▾ ";
+  }
+
+  .def-item {
+    margin-top: 12px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: rgba(255,255,255,0.75);
+  }
+
+  .def-item strong {
+    color: var(--yellow);
+  }
+
+  .def-item.on-card {
+    color: white;
+    background: rgba(0, 229, 255, 0.06);
+    margin: 8px -8px 0;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border-left: 2px solid var(--cyan);
+  }
+
+  .on-card-marker {
+    color: var(--cyan);
+    margin-right: 4px;
+  }
+
   .footer {
     margin-top: 32px;
     text-align: center;
@@ -219,8 +362,9 @@
   }
 
   @media (max-width: 500px) {
-    h1 { font-size: 28px; }
-    .cell { font-size: 9px; padding: 3px; }
+    h2.game-title { font-size: 26px; }
+    .landing h1 { font-size: 48px; }
+    .cell { font-size: 9px; padding: 4px; }
     .grid { gap: 4px; }
   }
 </style>
@@ -228,50 +372,104 @@
 <body>
 
 <div class="container">
-  <h1>
-    <span style="color: var(--hot-pink)">EURO</span><span style="color: var(--cyan)">VISION</span><br />
-    <span style="color: var(--yellow); font-size: 0.55em;">BINGO ✦ SEMI 1</span>
-  </h1>
-  <p class="subtitle">Vienna · 12 May 2026 · Tap squares as they happen</p>
 
-  <div class="name-section">
-    <label>Name</label>
-    <input type="text" id="player-name" placeholder="who's playing?" />
+  <div class="landing" id="landing">
+    <h1>
+      <span style="color: var(--hot-pink)">EURO</span><span style="color: var(--cyan)">VISION</span>
+      <span class="small" style="color: var(--yellow)">BINGO ✦ SEMI 1</span>
+    </h1>
+    <p class="tagline">what's your name, glamour?</p>
+    <div class="input-wrap">
+      <input type="text" id="name-input" placeholder="type a name..." autocomplete="off" />
+      <button id="start-btn">LET ME IN ✨</button>
+    </div>
+    <p class="footer-note">your card saves to this device · play offline · no accounts needed</p>
   </div>
 
-  <div class="controls">
-    <button id="new-card">🎴 New Card</button>
-    <button id="clear-marks" class="secondary">✕ Clear Marks</button>
+  <div class="game" id="game">
+    <h2 class="game-title">
+      <span style="color: var(--hot-pink)">EURO</span><span style="color: var(--cyan)">VISION</span>
+      <span style="color: var(--yellow)"> ✦ </span>
+      <span style="color: var(--lime)">BINGO</span>
+    </h2>
+    <p class="subtitle">Tap squares as they happen · 5 in a row = scream BINGO</p>
+
+    <div class="player-bar">
+      <span>playing as <strong id="player-display"></strong></span>
+      <button class="change-name" id="change-name">change name</button>
+    </div>
+
+    <div class="controls">
+      <button id="new-card">🎴 New Card</button>
+      <button id="clear-marks" class="secondary">✕ Clear Marks</button>
+    </div>
+
+    <div id="win-banner-slot"></div>
+
+    <div class="grid" id="grid"></div>
+
+    <details class="definitions">
+      <summary>ALL TROPES · ★ = ON YOUR CARD</summary>
+      <div id="definitions-list"></div>
+    </details>
+
+    <p class="footer">
+      douze points to chaos · <span class="accent">your card saves on this device</span>
+    </p>
   </div>
 
-  <div id="win-banner-slot"></div>
-
-  <div class="grid" id="grid"></div>
-
-  <p class="footer">
-    5 in a row = scream <span class="accent">BINGO</span><br />
-    your card saves to this device · douze points to chaos
-  </p>
 </div>
 
 <script>
   const TROPES = [
-    'Wind machine','Key change','Fire cannons','Dramatic kneel','Sudden rap section',
-    'Ethnic instrument cameo','Costume reveal','Backup dancers in formation',
-    'English-then-native switch','Gravity-defying hair','Impossibly tall man',
-    'Singer on a platform','LEDs spell a word','Glitter cannon','Drum break',
-    'Falsetto held too long','Whisper-to-belt','Camera goes upside down','Visible smoke',
-    'Confetti explosion','Folk costume','Latex outfit','Choreo with chairs',
-    'Singer points at camera','Hand on heart','Visible tear','Dancers in masks',
-    'Country gets booed','Wolf-whistle from crowd','Host language joke flops',
-    'Bizarre prop','Rhythmic clapping','Trumpet solo','Ballad gets staging budget',
-    'Disco ball','Light-up costume','Floor projection','Aerial silk',
-    'Singer screams a word','Fake snow','Stage smoke obscures singer'
+    { name: 'Wind machine', def: "A fan blasts the performer's hair skyward, usually timed to the emotional peak of the bridge." },
+    { name: 'Battle horn', def: 'A dramatic horn blast opens or punctuates the song, signalling that this entry means war.' },
+    { name: 'Topless drummers', def: 'Shirtless percussionists pound drums with the energy of a people who have something to prove.' },
+    { name: 'Folk instrument', def: 'A bouzouki, kantele, hurdy-gurdy, or similar national instrument appears to reassure voters this is authentic.' },
+    { name: 'DJ on stage', def: 'A person behind a laptop or decks is given prominent staging despite having nothing to do for most of the song.' },
+    { name: 'Dramatic costume change', def: 'The performer sheds an outer layer mid-song to reveal an entirely different, equally committed outfit underneath.' },
+    { name: 'Song about peace', def: 'Lyrics pivot to universal harmony and togetherness, usually just as the geopolitical voting blocs do their thing.' },
+    { name: 'Verka Serduchka moment', def: 'A moment so joyfully unhinged that it is rare to repeat.' },
+    { name: 'Fire cannons', def: 'Jets of flame erupt from the stage, signalling that the song has formally entered its epic phase.' },
+    { name: 'Disco ball', def: 'A mirrorball descends or rotates, scattering light across 10,000 people who suddenly feel emotions.' },
+    { name: 'Impossibly tall man', def: 'A performer or dancer of striking height appears on stage, wordlessly, purely for scale.' },
+    { name: 'Grandmas', def: 'Elderly women feature in the act — performing, baking, or both — to guaranteed crowd adoration.' },
+    { name: 'Girl churning butter', def: 'A folkloric prop or dance move signals total, unironic commitment to national identity.' },
+    { name: 'Confetti explosion', def: 'The stage erupts in paper at the finale, regardless of whether the song has earned it.' },
+    { name: 'English-to-native switch', def: 'The performer opens in English before pivoting to their mother tongue for maximum emotional manipulation.' },
+    { name: 'Fake snow', def: 'Foam or white particles drift from the rigging to create a winter atmosphere inside a venue that is 28 degrees.' },
+    { name: 'Fake rain', def: 'Water falls on the performer, who remains inexplicably composed, dry-eyed, and perfectly made up.' },
+    { name: 'Singer points at camera', def: 'Direct, sustained eye contact with the lens, usually on the highest note, as though Europe personally wronged them.' },
+    { name: 'Country gets booed', def: 'The crowd makes its geopolitical feelings known the moment a certain spokesperson appears on screen.' },
+    { name: 'Palestine solidarity', def: 'A flag, badge, or visual reference appears in solidarity, prompting immediate broadcaster commentary.' },
+    { name: 'Sudden rap section', def: 'The song pivots without warning into a rap verse that was nowhere in the studio recording.' },
+    { name: 'Latex outfit', def: 'The performer is wearing something that required both courage and talcum powder to get into.' },
+    { name: 'Dancers in masks', def: 'Masked backing dancers add menace or mystery while the lead singer pretends not to notice them.' },
+    { name: 'Choreo with chairs', def: "Dancers deploy chairs as props in a routine that clearly took three months and a choreographer's entire soul." },
+    { name: 'Key change', def: 'The song shifts up a tone for the final chorus, a transparent ploy that works every single time.' },
+    { name: 'Singer kneels dramatically', def: 'The performer descends to the floor mid-ballad as though the lyrics have physically wounded them.' },
+    { name: 'Singer on a platform', def: 'A riser, podium, or hydraulic lift elevates the performer above their dancers, making the hierarchy visible.' },
+    { name: 'LEDs spell a word', def: 'The stage display flashes a single emotionally-charged English word — DREAM, LOVE, RISE — in case anyone was confused.' },
+    { name: 'Hand on heart', def: 'The performer places a hand over their chest during the bridge, a universal Eurovision signal that this part is serious.' },
+    { name: 'Visible tear', def: 'A single tear catches the stage lights at exactly the right moment, suggesting either deep feeling or excellent direction.' },
+    { name: 'Falsetto held too long', def: 'A high note extends well past where it should have ended, which is the entire point.' },
+    { name: 'Whisper-to-belt', def: 'The song opens at near-whisper before exploding into full chest voice, daring you not to react.' },
+    { name: 'Camera upside down', def: 'A camera rotates or flips during a dramatic moment, suggesting that gravity itself is moved.' },
+    { name: 'Glitter cannon', def: 'Sparkling material is fired into the air with industrial force, blanketing the front row.' },
+    { name: 'Bizarre prop', def: 'An object appears on stage — a cube, a sword, a giant egg — and is treated with absolute seriousness.' },
+    { name: 'Light-up costume', def: 'The outfit contains its own power source, glowing in colours that coordinate with the lighting cues.' },
+    { name: 'Aerial silk', def: 'A performer ascends mid-song on fabric ropes, briefly turning the act into a Cirque du Soleil audition.' },
+    { name: 'Floor projection', def: 'The stage floor displays animated graphics — waves, fire, swirling galaxies — that the dancers must pretend to react to.' },
+    { name: 'Singer screams a word', def: 'A single word — "yes," "fight," "alive" — is shouted rather than sung, lending emotional credibility.' },
+    { name: 'Trumpet solo', def: 'A brass interlude appears unexpectedly, often performed by someone in an outrageous outfit standing on a riser.' },
+    { name: 'Wolf-whistle from crowd', def: 'The audience responds to a particularly committed costume reveal with audible appreciation.' },
+    { name: 'Host language joke flops', def: "A presenter attempts a pun in the host country's language; the camera cuts to a confused international crowd." }
   ];
 
   const STORAGE_KEY = 'eurovision-bingo';
   let card = null;
   let marks = {};
+  let playerName = '';
   let hasBingo = false;
 
   function load() {
@@ -280,24 +478,20 @@
       if (data) {
         card = data.card || null;
         marks = data.marks || {};
-        document.getElementById('player-name').value = data.name || '';
+        playerName = data.name || '';
       }
     } catch(e) {}
   }
 
   function save() {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        card,
-        marks,
-        name: document.getElementById('player-name').value
-      }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ card, marks, name: playerName }));
     } catch(e) {}
   }
 
   function makeCard() {
     const shuffled = [...TROPES].sort(() => Math.random() - 0.5).slice(0, 25);
-    shuffled[12] = 'FREE SPACE ✨';
+    shuffled[12] = { name: 'FREE SPACE ✨', def: 'A small mercy from the gods of broadcasting.' };
     return shuffled;
   }
 
@@ -314,14 +508,13 @@
   function renderBanner() {
     const slot = document.getElementById('win-banner-slot');
     if (hasBingo) {
-      const name = document.getElementById('player-name').value.trim() || 'YOU';
-      slot.innerHTML = `<div class="win-banner">🏆 BINGO! 🏆<small>${name} has done it</small></div>`;
+      slot.innerHTML = `<div class="win-banner">🏆 BINGO! 🏆<small>${playerName || 'YOU'} has done it</small></div>`;
     } else {
       slot.innerHTML = '';
     }
   }
 
-  function render() {
+  function renderGrid() {
     const grid = document.getElementById('grid');
     if (!card) {
       grid.innerHTML = '';
@@ -331,7 +524,8 @@
       const isFree = i === 12;
       const isMarked = marks[i];
       const cls = isFree ? 'cell free' : (isMarked ? 'cell marked' : 'cell');
-      return `<div class="${cls}" data-i="${i}">${trope}</div>`;
+      const safeDef = trope.def.replace(/"/g, '&quot;');
+      return `<div class="${cls}" data-i="${i}" title="${safeDef}">${trope.name}</div>`;
     }).join('');
 
     grid.querySelectorAll('.cell').forEach(cell => {
@@ -343,32 +537,81 @@
         if (!hasBingo && checkBingo()) {
           hasBingo = true;
         }
-        render();
+        renderGrid();
         renderBanner();
       });
     });
   }
+
+  function renderDefinitions() {
+    const list = document.getElementById('definitions-list');
+    if (!card) return;
+    // Names currently on this player's card (excluding the free space)
+    const onCard = new Set(card.map((t, i) => i === 12 ? null : t.name).filter(Boolean));
+    // Show ALL tropes alphabetically, with the ones on your card marked
+    list.innerHTML = [...TROPES]
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map(t => {
+        const mine = onCard.has(t.name);
+        return `<div class="def-item ${mine ? 'on-card' : ''}">
+          ${mine ? '<span class="on-card-marker">★</span> ' : ''}<strong>${t.name}.</strong> ${t.def}
+        </div>`;
+      })
+      .join('');
+  }
+
+  function showGame() {
+    document.getElementById('landing').classList.add('hidden');
+    document.getElementById('game').classList.add('active');
+    document.getElementById('player-display').textContent = playerName;
+    if (!card) {
+      card = makeCard();
+      save();
+    }
+    if (card && checkBingo()) hasBingo = true;
+    renderGrid();
+    renderBanner();
+    renderDefinitions();
+  }
+
+  function showLanding() {
+    document.getElementById('landing').classList.remove('hidden');
+    document.getElementById('game').classList.remove('active');
+    document.getElementById('name-input').value = playerName;
+    setTimeout(() => document.getElementById('name-input').focus(), 50);
+  }
+
+  function startGame() {
+    const name = document.getElementById('name-input').value.trim();
+    if (!name) return;
+    playerName = name;
+    save();
+    showGame();
+  }
+
+  document.getElementById('start-btn').addEventListener('click', startGame);
+  document.getElementById('name-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') startGame();
+  });
+
+  document.getElementById('change-name').addEventListener('click', showLanding);
 
   document.getElementById('new-card').addEventListener('click', () => {
     card = makeCard();
     marks = {};
     hasBingo = false;
     save();
-    render();
+    renderGrid();
     renderBanner();
+    renderDefinitions();
   });
 
   document.getElementById('clear-marks').addEventListener('click', () => {
     marks = {};
     hasBingo = false;
     save();
-    render();
+    renderGrid();
     renderBanner();
-  });
-
-  document.getElementById('player-name').addEventListener('input', () => {
-    save();
-    if (hasBingo) renderBanner();
   });
 
   // Sparkles
@@ -393,15 +636,11 @@
 
   // Init
   load();
-  // If they had a card, check if it was a winning state
-  if (card && checkBingo()) hasBingo = true;
-  // Generate first card if none
-  if (!card) {
-    card = makeCard();
-    save();
+  if (playerName) {
+    showGame();
+  } else {
+    showLanding();
   }
-  render();
-  renderBanner();
 </script>
 
 </body>
